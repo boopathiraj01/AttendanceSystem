@@ -1,4 +1,4 @@
-from attendance import MetaDataDB, client, collection
+from v1.AttendanceSystem.AttendanceSystem.attendance import MetaDataDB, client, collection
 from dotenv import load_dotenv
 from fastapi import APIRouter
 from bson import ObjectId
@@ -25,6 +25,9 @@ def list_faces(start: int = 0, limit: int = 10):
 
 @status_router.get("/face/{company_id}")
 def get_face(company_id: str):
+
+    if len(company_id) < 2:
+        company_id = int(company_id)
     record = collection.find_one({"company_id": company_id})
     if not record:
         return {"error": "Face not found"}
@@ -32,6 +35,8 @@ def get_face(company_id: str):
 
 @status_router.get("/face/{company_id}/{name}")
 def get_face_by_name(company_id: str, name: str):
+    if len(company_id) < 2:
+        company_id = int(company_id)
     record = collection.find_one({"company_id": company_id, "name": name})
     if not record:
         return {"error": "Face not found"}

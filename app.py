@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from attendance import MetaData, MetaDataDB,DBMS,Result
 from PIL import Image
 import numpy as np
+import io
 
 from  database import status_router
 from fastapi.middleware.cors import CORSMiddleware
@@ -36,7 +37,8 @@ async def upload_image(
 ):
     try:
         image_data = await file.read()
-        metadata = MetaData(name=name, company_id=company_id, image=file.file)
+        image = Image.open(io.BytesIO(image_data)).convert("RGB")
+        metadata = MetaData(name=name, company_id=company_id, image=image)
         dbms = DBMS()
         dbms.upload_image(metadata)
         return {"message": "Image uploaded successfully"}
@@ -48,7 +50,7 @@ async def upload_image(
 async def search_face(frame: UploadFile = File(...)):
     try:
         image_data = await frame.read()
-        image = Image.open(frame.file).convert("RGB")
+        image = np.array(Image.open(io.BytesIO(image_data)).convert("RGB"))
         dbms = DBMS()
         results = dbms.search_face(image=image)
         return {"results": [result.dict() for result in results]}
