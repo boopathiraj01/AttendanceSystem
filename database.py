@@ -1,4 +1,4 @@
-from attendance import MetaDataDB, client, collection
+from v1.AttendanceSystem.AttendanceSystem.attendance import MetaDataDB, client, collection
 from dotenv import load_dotenv
 from fastapi import APIRouter
 from bson import ObjectId
