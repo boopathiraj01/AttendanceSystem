@@ -10,6 +10,9 @@ import io
 from dotenv import load_dotenv
 load_dotenv()
 
+
+
+
 logger = logging.getLogger(__name__)
 
 # ── MongoDB ────────────────────────────────────────────────────────────────
@@ -17,6 +20,9 @@ from pymongo.mongo_client import MongoClient
 from pymongo.server_api import ServerApi
 
 uri = os.getenv("MONGODB_URI")
+
+print(uri)
+
 client = MongoClient(uri, server_api=ServerApi('1'))
 
 try:
@@ -29,8 +35,17 @@ database_name = "attendance_system"
 collection_name = "dbms"
 collection = client[database_name][collection_name]
 
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+print("SUPABASE_URL:", SUPABASE_URL)
+print("SUPABASE_KEY:", SUPABASE_KEY)
+
 # ── Supabase ───────────────────────────────────────────────────────────────
 from supabase import create_client, Client
+
+
+
 
 supabase: Client = create_client(
     os.getenv("SUPABASE_URL"),
@@ -191,10 +206,10 @@ class DBMS:
             self.metadata_db.save_metadata(record)
             logger.info(f"Face #{i} uploaded successfully.")
 
-    def search_face(self, image_path: str, image: Image.Image = None, topk: int = 5) -> list[Result]:
+    def search_face(self, image_path: str = None, image = None, topk: int = 5) -> list[Result]:
         if image is None:
             preds = self.detection.detect_face(
-                self.detection.load_image(image_path)
+                np.array(Image.open(image_path))
             )
         else:
             preds = self.detection.detect_face(image)
